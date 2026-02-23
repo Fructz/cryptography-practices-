@@ -1,10 +1,22 @@
 # GCD Program
 
+import sys
+import signal
+
 ASCII_FIRST = 32
 ASCII_SECOND = 126
 
 """
-Compute greatest common divisor using Euclid's algorithm
+Function to enable ctrl + c
+"""
+def def_handler(sig, frame):
+    print("\n\n[!] Leaving...\n")
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, def_handler)
+
+"""
+Get greatest common divisor using Euclid's algorithm
 """
 def gcd(a: int, b: int) -> int:
     a, b = abs(a), abs(b)
@@ -24,6 +36,18 @@ def generate_zn_star(n: int) -> list:
 
     return zn_star
 
+"""
+Obtain b when gcd(a,b) = 1 testing all the numbers
+"""
+def getb_zn(a: int, n: int) -> int:
+    if isinstance(n, int) and isinstance(a, int):
+        if gcd(a,n) != 1:
+            print("\n[!] No inverse exists")
+            return None
+        zn_star = generate_zn_star(n)
+        for element in zn_star:
+            if (a * element) % n == 1:
+                return element
 """
 Convert a single character to its ASCII code if its printable.
 Keep '\n' as a special case to preserve line breaks
@@ -45,9 +69,13 @@ def code_to_char(code: int) -> str:
     final = code - 32
     return final
 
-if __name__ == '__main__':
+"""
+Function to join and gather all the functions
+"""
+def joining_data():
 
-    print(f"[+] Please, insert 2 numbers to get their gcd\n")
+    print(f"\n\n[+] Please, insert 2 numbers: \n")
+    """
     n1= int(input("Number 1: "))
     n2 = int(input("Number 2: "))
     n = int(input("Insert n: "))
@@ -55,9 +83,19 @@ if __name__ == '__main__':
     result = gcd(n1,n2)
     resultZn = generate_zn_star(n)
 
-    print(f"Z_{n}* = {resultZn}")
     print(result)
+    print(f"Z_{n}* = {resultZn}")
     result2 = char_to_code(str(result))
     print(result2)
     result3 = code_to_char(result2)
     print(result3)
+    """
+    a = int(input("a: "))
+    n = int(input("n: "))
+    element = getb_zn(a,n)
+    print(element)
+
+if __name__ == '__main__':
+
+    joining_data()
+  
