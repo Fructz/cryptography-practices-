@@ -2,9 +2,11 @@
 
 import sys
 import signal
+import random
 
 ASCII_FIRST = 32
 ASCII_SECOND = 126
+VALID_KEY = ASCII_SECOND - ASCII_FIRST + 1
 
 """
 Function to enable ctrl + c
@@ -42,12 +44,24 @@ Obtain b when gcd(a,b) = 1 testing all the numbers
 def getb_zn(a: int, n: int) -> int:
     if isinstance(n, int) and isinstance(a, int):
         if gcd(a,n) != 1:
-            print("\n[!] No inverse exists")
+            # print("\n[!] No inverse exists")
             return None
         zn_star = generate_zn_star(n)
         for element in zn_star:
             if (a * element) % n == 1:
                 return element
+"""
+Generate K by random key generation using the get_zn function.
+"""
+def key_generation():
+    while True:
+        a = random.randrange(0, VALID_KEY)
+        if getb_zn(a, VALID_KEY) is not None:
+            break
+
+    b = random.randrange(0, VALID_KEY)
+
+    return (a, b)
 """
 Convert a single character to its ASCII code if its printable.
 Keep '\n' as a special case to preserve line breaks
@@ -73,9 +87,9 @@ def code_to_char(code: int) -> str:
 Function to join and gather all the functions
 """
 def joining_data():
-
-    print(f"\n\n[+] Please, insert 2 numbers: \n")
     """
+    print(f"\n\n[+] Please, insert 2 numbers: \n")
+
     n1= int(input("Number 1: "))
     n2 = int(input("Number 2: "))
     n = int(input("Insert n: "))
@@ -89,13 +103,16 @@ def joining_data():
     print(result2)
     result3 = code_to_char(result2)
     print(result3)
-    """
+
     a = int(input("a: "))
     n = int(input("n: "))
     element = getb_zn(a,n)
     print(element)
+    """
+    key = key_generation()
+    print(f"[{key[0]}, {key[1]}]")
 
 if __name__ == '__main__':
 
     joining_data()
-  
+
