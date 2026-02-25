@@ -6,7 +6,7 @@ import random
 
 ASCII_FIRST = 32
 ASCII_SECOND = 126
-VALID_KEY = ASCII_SECOND - ASCII_FIRST + 1
+VALID_KEY = ASCII_SECOND - ASCII_FIRST + 1 # 95
 
 """
 Function to enable ctrl + c
@@ -76,6 +76,29 @@ def char_to_code(code: str) -> int:
         return -1
     return con
 
+"""
+Encrypt the data
+"""
+def encrypt_file(filename: str, key: tuple):
+
+    with open(filename, 'r') as f:
+        plaintext = f.read()
+    ciphertext = ""
+
+    for char in plaintext:
+        if char == '\n':
+            ciphertext += '\n'
+        else:
+            num = ord(char) - 32
+            encrypted = (key[0] * num + key[1]) % VALID_KEY
+            ciphertext += chr(encrypted + 32)
+
+    with open("ciphertext.txt", 'w') as f:
+        f.write(ciphertext)
+    
+    print("[+] Encryption completed -> ciphertext.txt")
+
+
 def code_to_char(code: int) -> str:
 
     if code == -1:
@@ -112,7 +135,10 @@ def joining_data():
     key = key_generation()
     print(f"[{key[0]}, {key[1]}]")
 
+    print("\n\n")
+    result = encrypt_file("test.txt", key)
+    print(result)
+
 if __name__ == '__main__':
 
     joining_data()
-
