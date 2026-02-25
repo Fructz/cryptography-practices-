@@ -4,7 +4,7 @@
 #include <signal.h>
 #define ASCII_FIRST 32
 #define ASCII_SECOND 126
-#define VALID_KEY ASCII_SECOND - ASCII_FIRST + 1
+#define VALID_KEY (ASCII_SECOND - ASCII_FIRST + 1)
 
 typedef struct Key{
   int a;
@@ -16,6 +16,8 @@ int* generateZnStar(int, int *, int *);
 int getb_zn(int, int);
 void joining_data();
 void def_handler(int);
+void encryptFile(const char *, const char *, Key);
+void decipheringFile(const char *, const char *);
 Key keyGeneration();
 
 int main(){
@@ -47,7 +49,9 @@ int main(){
   //printf("%d", VALID_KEY);
   Key myKey = keyGeneration();
 
-  printf("[%d, ", myKey.a);printf("%d]", myKey.b);
+  printf("[%d, %d]", myKey.a, myKey.b);
+  encryptFile("test.txt", "ciphertext.txt", myKey);
+  //decipheringFile("ciphertext.txt", "decoded.txt");
   return 0;
 }
 
@@ -137,6 +141,75 @@ int char_to_code(char code) {
 char code_to_char(int code) {
     if (code == -1) return '\n';
     return (char)code;
+}
+
+void encryptFile(const char *inputFile, const char *outputFile, Key key) {
+    FILE *in = fopen(inputFile, "r");
+    if (in == NULL) {
+        printf("Error opening input file\n");
+        return;
+    }
+
+    FILE *out = fopen(outputFile, "w");
+    if (out == NULL) {
+        printf("Error opening output file\n");
+        fclose(in);
+        return;
+    }
+
+    int c;
+    while ((c = fgetc(in)) != EOF) {
+        if (c == '\n') {
+            fputc('\n', out);
+        } else {
+            int num = c - ASCII_FIRST;
+            int encrypted = (key.a * num + key.b) % VALID_KEY;
+            fputc(encrypted + ASCII_FIRST, out);
+        }
+    }
+
+    fclose(in);
+    fclose(out);
+
+    printf("\n[+] Encryption completed -> %s\n", outputFile);
+}
+
+void decipheringFile(const char *inputFile, const char *outputFile){
+    Key mykey;
+    printf("Enter your key:\n");
+    printf("a: "); scanf("%d", &mykey.a);
+    printf("b: "); scanf("%d", &mykey.b);
+
+    FILE *in = fopen(inputFile, "r");
+    if (in == NULL) {
+        printf("Error opening input file\n");
+        return;
+    }
+
+    FILE *out = fopen(outputFile, "w");
+    if (out == NULL) {
+        printf("Error opening output file\n");
+        fclose(in);
+        return;
+    }
+
+    int c;
+    int a_inv = getb_zn(mykey.a, VALID_KEY);
+    while ((c = fgetc(in)) != EOF) {
+        if (c == '\n') {
+            fputc('\n', out);
+        } else {
+            int num = c - ASCII_FIRST;
+            int decoded = a_inv * (num - mykey.b);
+            decoded = ((decoded % VALID_KEY) + VALID_KEY) % VALID_KEY;
+            fputc(decoded + ASCII_FIRST, out);
+        }
+    }
+
+    fclose(in);
+    fclose(out);
+
+    printf("[+] Decryption completed -> %s\n", outputFile);
 }
 
 void joining_data() {

@@ -95,9 +95,36 @@ def encrypt_file(filename: str, key: tuple):
 
     with open("ciphertext.txt", 'w') as f:
         f.write(ciphertext)
-    
+
     print("[+] Encryption completed -> ciphertext.txt")
 
+"""
+Decipher the data
+"""
+def deciphering_file(inputFile: str, outputFile: str):
+    print("Enter your key:")
+    a = int(input("a: "))
+    b = int(input("b: "))
+
+    a_inv = getb_zn(a, VALID_KEY)
+
+    with open(inputFile, 'r') as f:
+        ciphertext = f.read()
+
+    decoded_text = ""
+
+    for char in ciphertext:
+        if char == '\n':
+            decoded_text += '\n'
+        else:
+            num = ord(char) - 32
+            decoded = (a_inv * (num - b)) % VALID_KEY
+            decoded_text += chr(decoded + 32)
+
+    with open(outputFile, 'w') as f:
+        f.write(decoded_text)
+
+    print(f"[+] Decryption completed -> {outputFile}")
 
 def code_to_char(code: int) -> str:
 
@@ -138,6 +165,7 @@ def joining_data():
     print("\n\n")
     result = encrypt_file("test.txt", key)
     print(result)
+    deciphering_file("ciphertext.txt", "decoded.txt")
 
 if __name__ == '__main__':
 
