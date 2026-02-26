@@ -1,8 +1,11 @@
-# GCD Program
+# Affine cipher Program
+# Ramirez Flores Rodrigo Iñaki
+# Resendiz Rios Dieg Emiliano
 
 import sys
 import signal
 import random
+import os
 
 ASCII_FIRST = 32
 ASCII_SECOND = 126
@@ -22,7 +25,7 @@ Get greatest common divisor using Euclid's algorithm
 """
 def gcd(a: int, b: int) -> int:
     a, b = abs(a), abs(b)
-    while b != 0:
+    while b != 0: 
         a, b = b, a % b
     return a
 
@@ -39,16 +42,16 @@ def generate_zn_star(n: int) -> list:
     return zn_star
 
 """
-Obtain b when gcd(a,b) = 1 testing all the numbers
+Obtain b when gcd(a,b) = 1 testing all the numbers --- Get inverse of 1 number
 """
 def getb_zn(a: int, n: int) -> int:
-    if isinstance(n, int) and isinstance(a, int):
+    if isinstance(n, int) and isinstance(a, int): # isinstance is to be sure that a and b are integers
         if gcd(a,n) != 1:
             # print("\n[!] No inverse exists")
             return None
         zn_star = generate_zn_star(n)
         for element in zn_star:
-            if (a * element) % n == 1:
+            if (a * element) % n == 1: # gcd((a * element), n) == 1
                 return element
 """
 Generate K by random key generation using the get_zn function.
@@ -62,41 +65,37 @@ def key_generation():
     b = random.randrange(0, VALID_KEY)
 
     return (a, b)
-"""
-Convert a single character to its ASCII code if its printable.
-Keep '\n' as a special case to preserve line breaks
-"""
-def char_to_code(code: str) -> int:
-
-    if code == '\n':
-        return -1
-    con = ord(code) # return the ASCII to code (number)
-    if con < ASCII_FIRST or con > ASCII_SECOND:
-        print("[!] Error")
-        return -1
-    return con
 
 """
 Encrypt the data
 """
 def encrypt_file(filename: str, key: tuple):
 
-    with open(filename, 'r') as f:
-        plaintext = f.read()
+    if not os.path.isfile(filename):
+        print(f"[!] ERROR: '{filename}' is not a valid file")
+        return None
+    
+    try:
+        with open(filename, 'r') as f:
+            plaintext = f.read()
+    except Exception as e:
+        print(f"[!] Unexpected error while opening file: {e} \n\nPlease be sure that the data was started correctly\n")
+        return None
+
     ciphertext = ""
 
     for char in plaintext:
         if char == '\n':
             ciphertext += '\n'
         else:
-            num = ord(char) - 32
+            num = ord(char) - 32 # Get number and minus 32 to work with 0 value
             encrypted = (key[0] * num + key[1]) % VALID_KEY
-            ciphertext += chr(encrypted + 32)
+            ciphertext += chr(encrypted + 32) # Back adding 32
 
     with open("ciphertext.txt", 'w') as f:
         f.write(ciphertext)
 
-    print("[+] Encryption completed -> ciphertext.txt")
+    print("\n[+] Encryption completed -> ciphertext.txt")
 
 """
 Decipher the data
@@ -125,13 +124,6 @@ def deciphering_file(inputFile: str, outputFile: str):
         f.write(decoded_text)
 
     print(f"[+] Decryption completed -> {outputFile}")
-
-def code_to_char(code: int) -> str:
-
-    if code == -1:
-        return '\n'
-    final = code - 32
-    return final
 
 """
 Function to join and gather all the functions
@@ -163,8 +155,7 @@ def joining_data():
     print(f"[{key[0]}, {key[1]}]")
 
     print("\n\n")
-    result = encrypt_file("test.txt", key)
-    print(result)
+    encrypt_file("test.txt", key)
     deciphering_file("ciphertext.txt", "decoded.txt")
 
 if __name__ == '__main__':
