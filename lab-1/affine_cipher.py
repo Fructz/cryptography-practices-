@@ -159,13 +159,14 @@ def joining_data():
     element = getb_zn(a,n)
     print(element)
     """
+
     key = key_generation()
     print(f"[{key[0]}, {key[1]}]")
 
-    print("\n\n")
+    """print("\n\n")
     result = encrypt_file("test.txt", key)
     print(result)
-    deciphering_file("ciphertext.txt", "decoded.txt")
+    deciphering_file("ciphertext.txt", "decoded.txt")"""
 
 if __name__ == '__main__':
 
