@@ -58,4 +58,4 @@ def encrypt_file(input_file, output_file):
     print("\nCiphertext saved in:", output_file)
 
 if __name__ == "__main__":
-    encrypt_file("plaintext.txt", "ciphertext.txt")
+    encrypt_file("plaintext.txt", "ciphertexts.txt")
