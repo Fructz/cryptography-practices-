@@ -157,6 +157,7 @@ def joining_data():
     print("\n\n")
     encrypt_file("test.txt", key)
     deciphering_file("ciphertext.txt", "decoded.txt")
+    # Testing
 
 if __name__ == '__main__':
 
