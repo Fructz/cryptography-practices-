@@ -11,19 +11,33 @@ typedef struct Key
 {
   int KMatrix[MATRIX_CELLS][MATRIX_CELLS];
   int detK;
+  int invDetK;
 } Key;
-
 
 int gcd(int, int);
 int multInv(int, int);
 void encipherFile();
 Key keyGeneration(int);
+Key inverseMatrix(Key, int);
 
 int main(){
   srand(time(NULL));
 
-  Key K = keyGeneration(VALID_KEY);
-  encipherFile(K);
+  for (int i = 0; i < 10; i++)
+  {
+    printf("Key: %d\n", i + 1);
+
+    Key K = keyGeneration(VALID_KEY);
+    Key Kinv = inverseMatrix(K, VALID_KEY);
+
+    printf("\n");
+  }
+
+  /*printf("%d\n", multInv(26,7));
+  printf("%d\n", multInv(35,12));
+  printf("%d\n", multInv(40,7));
+  printf("%d\n", multInv(55,8));
+  printf("%d\n", multInv(95,17));*/
 }
 
 int multInv(int n, int a){
@@ -75,12 +89,42 @@ Key keyGeneration(int n){
 
     int prev_detK = K.KMatrix[0][0] * K.KMatrix[1][1] - K.KMatrix[0][1] * K.KMatrix[1][0];
     K.detK = (prev_detK % n + n) % n;
+
+    K.invDetK = multInv(n, K.detK);
   } while (gcd(K.detK, n) != 1);
 
+  printf("K = \n");
   printf("[%d][%d]\n", K.KMatrix[0][0], K.KMatrix[0][1]);
   printf("[%d][%d]\n", K.KMatrix[1][0], K.KMatrix[1][1]);
 
   return K;
+}
+
+Key inverseMatrix(Key K, int n){
+  Key Kinv;
+
+  int a = K.KMatrix[0][0];
+  int b = K.KMatrix[0][1];
+  int c = K.KMatrix[1][0];
+  int d = K.KMatrix[1][1];
+
+  int detInv = K.invDetK;
+
+  Kinv.KMatrix[0][0] = (detInv * d) % n;
+  Kinv.KMatrix[0][1] = (detInv * (-b)) % n;
+  Kinv.KMatrix[1][0] = (detInv * (-c)) % n;
+  Kinv.KMatrix[1][1] = (detInv * a) % n;
+
+  for(int i = 0; i < MATRIX_CELLS; i++){
+    for(int j = 0; j < MATRIX_CELLS; j++){
+      Kinv.KMatrix[i][j] = (Kinv.KMatrix[i][j] % n + n) % n;
+    }
+  }
+
+  printf("K^-1 = \n");
+  printf("[%d][%d]\n", Kinv.KMatrix[0][0], Kinv.KMatrix[0][1]);
+  printf("[%d][%d]\n", Kinv.KMatrix[1][0], Kinv.KMatrix[1][1]);
+  return Kinv;
 }
 
 void encipherFile(Key K){
