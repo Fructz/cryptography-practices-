@@ -118,9 +118,9 @@ def matrix_inverse(K: tuple) -> int:
     k_inv = [[(d * det_inv) % MOD,(-b * det_inv) % MOD],
     [(-c * det_inv) % MOD, (a * det_inv) % MOD]]
 
-    return k_inv
+    return k_inv, det_inv
 
-def hill_decipher(text: str, K: tuple, det_inv: int) -> str:
+def hill_decipher(text: str, k_inv: int) -> str:
 
     ciphertext = ""
     buffer = ""
@@ -129,7 +129,7 @@ def hill_decipher(text: str, K: tuple, det_inv: int) -> str:
     for char in text:
 
         if char == '\n':
-            ciphertext += '\n'
+            plaintext += '\n'
             continue
 
         buffer += char
@@ -149,17 +149,24 @@ def hill_decipher(text: str, K: tuple, det_inv: int) -> str:
 
     return plaintext
 
-def decipher_file(encrypted_file, k: tuple):
-    print("testing...")
+def decipher_file(encrypted_file, output_file, K: tuple):
 
     with open(encrypted_file, "r") as f:
         ciphertext = f.read()
 
+    plaintext = hill_decipher(ciphertext, K)
+
+    with open(output_file, "w") as f:
+        f.write(plaintext)
+
+    print("\nPlaintext saved in:", output_file)
+
+
 def join():
     K = key_generation()
-    det_inv = matrix_inverse(K)
-    print(det_inv)
-    #encrypt_file("plaintext.txt", "ciphertexts.txt", K)
+    k_inv, det_inv = matrix_inverse(K)
+    encrypt_file("test.txt", "ciphertexts.txt", K)
+    decipher_file("ciphertexts.txt", "decrypted_file.txt", k_inv)
 
 if __name__ == "__main__":
     join()
