@@ -22,7 +22,7 @@ def random_number(min_v, max_v):
 
 def permutation_random(n: int) -> list:
     if n < 3:
-        return 0
+        raise ValueError("n must be >= 3") # return valuerror
 
     P = list(range(1, n + 1))
 
